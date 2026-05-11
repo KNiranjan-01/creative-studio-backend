@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "dotgitignore": "^2.1.0",
+    "express": "^5.2.1",
+    "gitignore": "^0.7.0",
+    "node": "^26.1.0"
+  }
+}
