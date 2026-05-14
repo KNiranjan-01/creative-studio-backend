@@ -1,4 +1,6 @@
 const Organization = require('../models/organization.model');
+const User = require('../models/user.model');
+const OrgMember = require('../models/orgMember.model');
 const asyncHandler = require('../utils/asyncHandler');
 
 exports.getAllOrganizations = asyncHandler(async (req, res) => {
@@ -37,7 +39,25 @@ exports.getOrganizationById = asyncHandler(async (req, res) => {
         return res.status(404).json({ success: false, message: 'Organization not found' });
     }
 
-    res.status(200).json({ success: true, data: org });
+    const members = await OrgMember.find({ orgId: org._id }).populate('userId', 'fullName email').populate('invitedBy', 'fullName');
+
+    res.status(200).json({ success: true, data: org, members });
+});
+
+exports.getPlatformStats = asyncHandler(async (req, res) => {
+    const totalUsers = await User.countDocuments();
+    const activeOrgs = await Organization.countDocuments({ isDeleted: false });
+    const deletedOrgs = await Organization.countDocuments({}, { includeDeleted: true }) - activeOrgs;
+
+    res.status(200).json({
+        success: true,
+        data: {
+            totalUsers,
+            activeOrgs,
+            deletedOrgs,
+            totalOrgs: activeOrgs + deletedOrgs
+        }
+    });
 });
 
 exports.restoreOrganization = asyncHandler(async (req, res) => {
