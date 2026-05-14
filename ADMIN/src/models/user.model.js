@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+const { ROLES } = require('../config/roles');
+
 
 const userSchema = new mongoose.Schema({
     fullName: {
@@ -24,6 +26,11 @@ const userSchema = new mongoose.Schema({
     refreshToken: {
         type: String,
         select: false
+    },
+    role: {
+        type: String,
+        enum: Object.values(ROLES),
+        default: ROLES.MEMBER
     }
 }, { timestamps: true });
 

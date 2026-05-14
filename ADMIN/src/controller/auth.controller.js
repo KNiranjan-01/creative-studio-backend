@@ -48,7 +48,8 @@ exports.register = asyncHandler(async (req, res, next) => {
         user: {
             id: user._id,
             fullName: user.fullName,
-            email: user.email
+            email: user.email,
+            role: user.role
         }
     });
 });
@@ -83,7 +84,8 @@ exports.login = asyncHandler(async (req, res, next) => {
         user: {
             id: user._id,
             fullName: user.fullName,
-            email: user.email
+            email: user.email,
+            role: user.role
         }
     });
 });
