@@ -18,7 +18,8 @@ build/
  
 # Log files
 *.log
- 
+
+
 # Package files
 *.jar
  
