@@ -25,6 +25,7 @@ app.use(cors({
         process.env.FRONTEND_URL || 'http://localhost:5173',
         process.env.BACKEND_URL || 'http://localhost:3000',
         'https://creativestudio.onrender.com',
+        'https://cretivestudio.onrender.com',
         'https://creative-studio-backend-3vj9.onrender.com'
     ],
     credentials: true,
