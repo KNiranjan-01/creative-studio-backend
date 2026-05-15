@@ -23,7 +23,9 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 app.use(cors({
     origin: [
         process.env.FRONTEND_URL || 'http://localhost:5173',
-        process.env.BACKEND_URL || 'http://localhost:3000'
+        process.env.BACKEND_URL || 'http://localhost:3000',
+        'https://creativestudio.onrender.com',
+        'https://creative-studio-backend-3vj9.onrender.com'
     ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
