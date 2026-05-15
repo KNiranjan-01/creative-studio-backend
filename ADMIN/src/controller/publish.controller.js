@@ -1,4 +1,5 @@
 const Connection = require('../models/connection.model');
+const CalendarEvent = require('../models/calendarEvent.model');
 const asyncHandler = require('../utils/asyncHandler');
 const { v2: cloudinary } = require('cloudinary');
 
@@ -9,7 +10,7 @@ cloudinary.config({ cloudinary_url: process.env.CLOUDINARY_URL });
 // @desc  Publish content to one or more social platforms
 // @access Protected
 exports.publish = asyncHandler(async (req, res) => {
-    const { platforms, text, imageB64s } = req.body;
+    const { platforms, text, imageB64s, eventId } = req.body;
     const userId = req.user._id;
 
     if (!platforms || !Array.isArray(platforms) || platforms.length === 0) {
@@ -204,5 +205,18 @@ exports.publish = asyncHandler(async (req, res) => {
     }
 
     const allSuccessful = results.length > 0 && results.every((r) => r.success);
+
+    // If successful and an eventId was provided, update the event status to 'Posted'
+    if (allSuccessful && eventId) {
+        try {
+            await CalendarEvent.findOneAndUpdate(
+                { _id: eventId, orgId: req.org._id },
+                { status: 'Posted' }
+            );
+        } catch (err) {
+            console.error('Failed to update event status to Posted:', err);
+        }
+    }
+
     res.json({ success: allSuccessful, results });
 });
