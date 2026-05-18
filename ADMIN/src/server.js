@@ -58,6 +58,7 @@ const organizationRoutes = require('./routes/organization.routes');
 const adminRoutes = require('./routes/admin.routes');
 const teamRoutes = require('./routes/team.routes');
 const calendarRoutes = require('./routes/calendar.routes');
+const creativeRoutes = require('./routes/creative.routes');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/connections', connectionsRoutes);
@@ -66,6 +67,7 @@ app.use('/api/organization', organizationRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/team', teamRoutes);
 app.use('/api/calendar', calendarRoutes);
+app.use('/api/creatives', creativeRoutes);
 
 // ─── Health Check ─────────────────────────────────────────────────────────────
 

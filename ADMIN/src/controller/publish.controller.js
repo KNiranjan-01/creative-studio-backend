@@ -33,7 +33,7 @@ exports.publish = asyncHandler(async (req, res) => {
         for (const b64 of imageB64s) {
             const uploadRes = await cloudinary.uploader.upload(b64, {
                 resource_type: 'auto',
-                folder: 'creative-studio'
+                folder: `creative-studio/${req.org._id}/creatives`
             });
             cloudinaryUrls.push(uploadRes.secure_url);
         }

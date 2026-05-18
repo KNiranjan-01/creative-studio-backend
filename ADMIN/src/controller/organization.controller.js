@@ -7,9 +7,10 @@ const { v2: cloudinary } = require('cloudinary');
 
 cloudinary.config({ cloudinary_url: process.env.CLOUDINARY_URL });
 
-async function uploadLogoToCloudinary(base64String) {
+async function uploadLogoToCloudinary(base64String, orgId) {
+    const folderPath = orgId ? `creative-studio/${orgId}/logos` : 'creative-studio/logos';
     const result = await cloudinary.uploader.upload(base64String, {
-        folder: 'creative-studio/logos',
+        folder: folderPath,
         resource_type: 'image',
         transformation: [{ width: 400, height: 400, crop: 'limit' }]
     });
@@ -27,18 +28,16 @@ exports.createOrganization = asyncHandler(async (req, res) => {
         return res.status(409).json({ success: false, message: 'Organization already exists for this user' });
     }
 
-    const { logoBase64, ...orgData } = req.body;
-    let logoUrl = '';
+    const newOrg = new Organization({
+        ...orgData,
+        ownerId: req.user._id
+    });
 
     if (logoBase64) {
-        logoUrl = await uploadLogoToCloudinary(logoBase64);
+        newOrg.logoUrl = await uploadLogoToCloudinary(logoBase64, newOrg._id);
     }
 
-    const newOrg = await Organization.create({
-        ...orgData,
-        ownerId: req.user._id,
-        logoUrl
-    });
+    await newOrg.save();
 
     // Create the OrgMember for the owner
     await OrgMember.create({
@@ -96,19 +95,20 @@ exports.updateOrganization = asyncHandler(async (req, res) => {
 
     const { logoBase64, ...updateData } = req.body;
 
-    if (logoBase64) {
-        updateData.logoUrl = await uploadLogoToCloudinary(logoBase64);
-    }
-
-    const org = await Organization.findOneAndUpdate(
-        { ownerId: req.user._id },
-        updateData,
-        { new: true, runValidators: true }
-    );
-
+    let org = await Organization.findOne({ ownerId: req.user._id });
     if (!org) {
         return res.status(404).json({ success: false, message: 'Organization not found' });
     }
+
+    if (logoBase64) {
+        updateData.logoUrl = await uploadLogoToCloudinary(logoBase64, org._id);
+    }
+
+    org = await Organization.findByIdAndUpdate(
+        org._id,
+        updateData,
+        { new: true, runValidators: true }
+    );
 
     res.status(200).json({ success: true, data: org });
 });
